@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
@@ -46,19 +46,7 @@ if uploaded_file:
     # Dividir datos
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    # Grid Search
-    # with st.spinner("Buscando los mejores hiperparámetros..."):
-    #     param_grid = {
-    #         'n_estimators': [50, 100],
-    #         'max_depth': [None, 10]
-    #     }
-    #     grid = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=5)
-    #     grid.fit(X_train, y_train)
-    #     best_params = grid.best_params_
-
-    # st.success(f"🏆 Mejores parámetros encontrados: {best_params}")
-
-    # Entrenar modelo final
+    # Entrenar modelo
     model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X, y)
 
@@ -70,33 +58,36 @@ if uploaded_file:
     st.write(f"**Precisión del modelo:** {accuracy:.2f}")
 
     st.header("📌 Importancia de las características")
-
     importances = model.feature_importances_
     features = X.columns
     feature_df = pd.DataFrame({'Feature': features, 'Importance': importances})
     feature_df = feature_df.sort_values(by='Importance', ascending=False)
-
     st.bar_chart(feature_df.set_index('Feature'))
 
-    # Supervivencia por Smoking_Status
-    st.subheader("🟤 Smoking Status")
+    # Visualizaciones organizadas
+    st.header("📊 Visualizaciones")
+    col1, col2 = st.columns(2)
 
-    fig1, ax1 = plt.subplots(figsize=(8, 5))
-    sns.countplot(data=df, x='Smoking_Status', hue='Survival_Status', ax=ax1, palette='Set2')
-    ax1.set_title('Supervivencia por Estado de Fumador')
-    ax1.set_xlabel('Smoking Status')
-    ax1.set_ylabel('Número de personas')
-    ax1.legend(title='Survival Status')
-    st.pyplot(fig1)
+    with col1:
+        st.markdown("#### 🟤 Supervivencia por Estado de Fumador")
+        fig1, ax1 = plt.subplots(figsize=(5, 4))
+        sns.countplot(data=df, x='Smoking_Status', hue='Survival_Status', ax=ax1, palette='Set2')
+        ax1.set_title('Fumador vs Supervivencia')
+        ax1.set_xlabel('Estado de Fumador')
+        ax1.set_ylabel('Cantidad')
+        ax1.legend(title='Supervivencia')
+        st.pyplot(fig1)
 
+    with col2:
+        st.markdown("#### 🔢 Matriz de Confusión")
+        fig2, ax2 = plt.subplots(figsize=(5, 4))
+        sns.heatmap(confusion_matrix(y_test, prediccion), annot=True, fmt='d', cmap='Blues', ax=ax2)
+        ax2.set_xlabel("Predicción")
+        ax2.set_ylabel("Real")
+        ax2.set_title("Matriz de Confusión")
+        st.pyplot(fig2)
 
-    st.subheader("🔢 Matriz de Confusión")
-    fig, ax = plt.subplots()
-    sns.heatmap(confusion_matrix(y_test, prediccion), annot=True, fmt='d', cmap='Blues', ax=ax)
-    ax.set_xlabel("Predicción")
-    ax.set_ylabel("Valor Real")
-    st.pyplot(fig)
-
+    # Reporte
     st.subheader("🧾 Reporte de Clasificación")
     st.text(classification_report(y_test, prediccion))
 
@@ -114,19 +105,15 @@ if uploaded_file:
     if st.button("Predecir supervivencia"):
         input_df = pd.DataFrame([input_data])
 
-        # Codificar variables categóricas
         for col in cat_cols:
             le = LabelEncoder()
-            le.fit(df[col])  # Ajustamos usando el df original
-            input_df[col] = le.transform([input_data[col]])  # Transformamos directamente desde input_data
+            le.fit(df[col])
+            input_df[col] = le.transform([input_data[col]])
 
-        # Reordenar columnas como en X
         input_df = input_df[X.columns]
 
         pred = model.predict(input_df)[0]
         st.success(f"🎯 Predicción: {'Sobrevivió' if pred == 1 else 'No sobrevivió'}")
-
-
 
 else:
     st.info("Por favor, sube un archivo CSV para comenzar.")
