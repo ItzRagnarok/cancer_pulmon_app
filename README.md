@@ -22,10 +22,11 @@ Aplicación interactiva de Machine Learning diseñada para predecir la probabili
 *   **Predicción Interactiva:** Panel manual donde el usuario puede introducir parámetros personalizados y obtener una predicción instantánea de supervivencia.
 
 ## 📸 Interfaz de la Aplicación
-
-*Añade aquí un par de capturas de tu aplicación funcionando en Streamlit.*
+*Panel de Carga y Evaluación*
 ![Panel de Carga y Evaluación](https://github.com/user-attachments/assets/ce9064e8-2370-4cd2-8ef1-74cfa429504a)
+*Panel Visualizaciones*
 ![Visualizaciones](https://github.com/user-attachments/assets/a4d0bab7-112e-4b4b-89c2-64da44ad4ec0)
+*Panel de Predicción Manual*
 ![Panel de Predicción Manual](https://github.com/user-attachments/assets/1786546f-ed75-4589-a816-b2139aac5b5d)
 
 ## 🚀 Instalación y Despliegue en Local
@@ -38,7 +39,7 @@ Si deseas ejecutar este proyecto en tu entorno local, sigue estos pasos:
 
 ### Pasos de ejecución
 1. Clonar el repositorio:
-   `git clone [tu-enlace-de-github]`
+   `git clone https://github.com/ItzRagnarok/cancer_pulmon_app.git`
 2. Instalar las dependencias necesarias:
    `pip install pandas scikit-learn streamlit seaborn matplotlib`
 3. Ejecutar la aplicación de Streamlit:
