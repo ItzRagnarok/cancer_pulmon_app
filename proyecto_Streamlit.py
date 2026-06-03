@@ -14,11 +14,25 @@ st.title("🩺 Predicción de Supervivencia - Cáncer de Pulmón")
 
 # Cargar los datos
 st.header("📂 Cargar y explorar los datos")
-uploaded_file = st.file_uploader("Sube el archivo CSV", type="csv")
+uploaded_file = st.file_uploader("Sube tu propio archivo CSV (Opcional)", type="csv")
+
+df = None
 
 if uploaded_file:
     df = pd.read_csv(uploaded_file)
+    st.success("💾 ¡Archivo subido correctamente por el usuario!")
+else:
+    # INTENTA CARGAR EL ARCHIVO POR DEFECTO DEL REPOSITORIO
+    # Cambia "cancer_data.csv" por el nombre exacto de tu archivo CSV
+    nombre_archivo_defecto = "Lung_Cancer_Trends_Realistic.csv" 
+    try:
+        df = pd.read_csv(nombre_archivo_defecto)
+        st.info(f"📦 Cargando automáticamente el dataset por defecto (`{nombre_archivo_defecto}`) del repositorio.")
+    except FileNotFoundError:
+        st.error(f"❌ No se encontró el archivo `{nombre_archivo_defecto}` en el repositorio. Por favor, sube un CSV manualmente.")
 
+# Si el dataframe se ha cargado (ya sea por el usuario o por defecto)
+if df is not None:
     columnas_utiles = [
         'Age', 'Gender', 'Smoking_Status', 'Years_Smoking', 'Cigarettes_Per_Day',
         'Secondhand_Smoke_Exposure', 'Air_Pollution_Level', 'Family_History',
@@ -114,6 +128,3 @@ if uploaded_file:
 
         pred = model.predict(input_df)[0]
         st.success(f"🎯 Predicción: {'Sobrevivió' if pred == 1 else 'No sobrevivió'}")
-
-else:
-    st.info("Por favor, sube un archivo CSV para comenzar.")
